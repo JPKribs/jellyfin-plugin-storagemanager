@@ -5,6 +5,11 @@ on:
     types:
       - released
   workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Published release tag to add to the manifest (e.g. v12.4.1.0)'
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -43,14 +48,14 @@ jobs:
       - name: Get Release Info
         id: release_info
         env:
-          TAG: ${{ github.event.release.tag_name }}
+          TAG: ${{ github.event.release.tag_name || inputs.tag }}
         run: |
           # Extract version and targetAbi from build.yaml
           BUILD_VERSION=$(grep '^version:' build.yaml | sed 's/version: *"\?\([^"]*\)"\?.*/\1/' | tr -d '"')
           TARGET_ABI=$(grep '^targetAbi:' build.yaml | sed 's/targetAbi: *"\?\([^"]*\)"\?.*/\1/' | tr -d '"')
 
-          BASE_URL="https://github.com/JPKribs/jellyfin-plugin-youtubeaudio/releases/download/${TAG}"
-          ASSET="jellyfin-plugin-youtubeaudio-${BUILD_VERSION}.zip"
+          BASE_URL="https://github.com/JPKribs/jellyfin-plugin-storagemanager/releases/download/${TAG}"
+          ASSET="jellyfin-plugin-storagemanager-${BUILD_VERSION}.zip"
 
           # The manifest takes the hash of the zip servers will download, never only the .md5 beside it.
           # -f on every download: a missing asset must fail the job rather than hashing an error page.
@@ -80,7 +85,7 @@ jobs:
           # variables, never through template interpolation, so quotes or $() in a changelog
           # cannot execute or break the job.
           RELEASE_BODY: ${{ github.event.release.body }}
-          TAG: ${{ github.event.release.tag_name }}
+          TAG: ${{ github.event.release.tag_name || inputs.tag }}
           BUILD_VERSION: ${{ steps.release_info.outputs.build_version }}
           TARGET_ABI: ${{ steps.release_info.outputs.target_abi }}
           CHECKSUM: ${{ steps.release_info.outputs.checksum }}
@@ -94,7 +99,7 @@ jobs:
             --arg version "$BUILD_VERSION" \
             --arg changelog "$SANITIZED_CHANGELOG" \
             --arg targetAbi "$TARGET_ABI" \
-            --arg sourceUrl "https://github.com/JPKribs/jellyfin-plugin-youtubeaudio/releases/download/${TAG}/jellyfin-plugin-youtubeaudio-${BUILD_VERSION}.zip" \
+            --arg sourceUrl "https://github.com/JPKribs/jellyfin-plugin-storagemanager/releases/download/${TAG}/jellyfin-plugin-storagemanager-${BUILD_VERSION}.zip" \
             --arg checksum "$CHECKSUM" \
             --arg timestamp "$TIMESTAMP" \
             '{
@@ -112,7 +117,7 @@ jobs:
 
       - name: Commit Changes
         env:
-          TAG: ${{ github.event.release.tag_name }}
+          TAG: ${{ github.event.release.tag_name || inputs.tag }}
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
