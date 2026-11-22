@@ -62,4 +62,4 @@ Returns the plugin's strings in one language, for the dashboard pages. Allows an
 
 ## Scheduled task
 
-**Check storage**, under **Storage** in **Dashboard → Scheduled Tasks**, checks every disk every 30 minutes and at startup.
+**Check storage**, under **Maintenance** in **Dashboard → Scheduled Tasks**, checks every disk every 30 minutes and at startup.

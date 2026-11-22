@@ -275,7 +275,7 @@ export default function (view) {
         }).join('');
         var wrap = node('div', 'base-static-table-scroll', '');
         wrap.innerHTML = '<table class="base-static-table"><thead><tr><th>' + escapeHtml(t.tr('LabelStatus')) + '</th><th>'
-            + escapeHtml(t.tr('LabelFolder')) + '</th><th>' + escapeHtml(t.tr('ColumnLibrary')) + '</th></tr></thead><tbody>' + rows + '</tbody></table>';
+            + escapeHtml(t.tr('LabelFolder')) + '</th><th>' + escapeHtml(t.tr('LabelUsage')) + '</th></tr></thead><tbody>' + rows + '</tbody></table>';
         section.appendChild(wrap);
         return section;
     }

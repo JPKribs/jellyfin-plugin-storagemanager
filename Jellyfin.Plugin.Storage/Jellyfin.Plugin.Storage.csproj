@@ -60,7 +60,6 @@
 
   <ItemGroup>
     <!-- Local strings whose English matches a Jellyfin string with another meaning -->
-    <JellyfinTextMatch Include="ColumnLibrary" />
     <JellyfinTextMatch Include="HeaderFormat" />
     <JellyfinTextMatch Include="LabelSpace" />
   </ItemGroup>

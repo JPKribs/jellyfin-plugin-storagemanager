@@ -159,7 +159,7 @@ export function createAlertEditor(options) {
     root.querySelector('.storage-alert-checks').setAttribute('aria-label', t.tr('TabStorage'));
     var pillGroup = root.querySelector('.base-pill-group');
     pillGroup.setAttribute('aria-label', t.tr('LabelMeasurement'));
-    pillGroup.children[0].textContent = t.tr('UnitUsage');
+    pillGroup.children[0].textContent = t.tr('LabelUsage');
     pillGroup.children[1].textContent = t.tr('LabelSize');
     var unitField = root.querySelector('.storage-alert-unit');
 
