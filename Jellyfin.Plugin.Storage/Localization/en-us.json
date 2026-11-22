@@ -125,7 +125,7 @@
   "HelpScanGuardScope": "Only full library scans are blocked. Scanning one library from its menu always runs.",
   "HelpShareAddress": "Where this share is mounted from, such as smb://nas/Media. Missing shares are mounted again from it.",
   "HelpShareAddressWindows": "Where this share is connected from, such as \\\\nas\\Media. Missing shares are connected again from it.",
-  "HelpStorage": "Each disk and share your libraries use, with its space and mount state. Open a disk for its folders.",
+  "HelpStorage": "Each disk and share Jellyfin uses, for its libraries or its own folders, with its space and state. Open a disk for its details.",
   "HelpVolumeName": "Up to 11 letters, numbers, spaces, dashes, or underscores.",
   "HelpWarningAt": "Logs a warning in the activity log.",
   "HelpWarningPoint": "A disk past this point is low on space.",
