@@ -1,5 +1,5 @@
 site_name: Storage
-site_description: A Jellyfin plugin that watches the disks and shares your libraries use.
+site_description: A Jellyfin plugin that watches the disks and shares Jellyfin uses.
 site_url: https://jpkribs.github.io/jellyfin-plugin-storagemanager/
 repo_url: https://github.com/JPKribs/jellyfin-plugin-storagemanager
 repo_name: JPKribs/jellyfin-plugin-storagemanager
@@ -46,7 +46,17 @@ nav:
   - Overview: index.md
   - Getting started:
       - Installation: Installation.md
+  - Using Storage:
+      - Storage tab: StorageTab.md
+      - Disk details: DiskDetails.md
+      - Formatting and folders: Formatting.md
+      - Settings: Settings.md
+      - Missing disks: MissingDisks.md
+      - Activity log: ActivityLog.md
   - Reference:
+      - Troubleshooting: Troubleshooting.md
+      - API: API.md
       - Versioning: Versioning.md
   - Development:
+      - Building and testing: Development.md
       - Architecture: Architecture.md
