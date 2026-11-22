@@ -1,0 +1,51 @@
+<div id="StorageStoragePage" data-role="page"
+     class="page type-interior pluginConfigurationPage withTabs"
+     data-require="emby-button,emby-input,emby-select"
+     data-controller="__plugin/storage_storage.js">
+    <div data-role="content">
+        <div class="content-primary">
+            <form id="StorageStorageForm">
+                <div class="verticalSection verticalSection-extrabottompadding">
+
+                    <!-- Page title -->
+                    <div class="sectionTitleContainer flex align-items-center">
+                        <h1 class="sectionTitle" data-str="TabStorage">Storage</h1>
+                    </div>
+                    <div class="fieldDescription" data-str="HelpStorage">
+                        Each disk and share your libraries use, with its space and mount state.
+                    </div>
+
+                    <!-- Attention -->
+                    <!-- What needs a look, one line per problem, or one line saying every disk is healthy. -->
+                    <div id="attention" role="status"></div>
+
+                    <!-- Space -->
+                    <!-- The size, used, and free space of every disk the libraries use, added up. -->
+                    <div id="spaceCards" class="base-cards"></div>
+
+                    <!-- Disks -->
+                    <!-- One row per disk or share, each opened in a dialog. The filter shows disks no library uses too. -->
+                    <div class="sectionTitleContainer flex align-items-center">
+                        <h2 class="sectionTitle" data-str="HeaderDisks">Disks</h2>
+                    </div>
+                    <div class="storage-list-toolbar">
+                        <div class="base-pill-group" id="diskFilter" role="group" aria-label="Show" data-str-label="LabelShow">
+                            <button type="button" class="base-pill" data-value="used" aria-pressed="true" data-str="FilterJellyfin">Jellyfin</button>
+                            <button type="button" class="base-pill" data-value="all" aria-pressed="false" data-str="All">All</button>
+                        </div>
+                        <button is="emby-button" type="button" id="btnCheckNow" class="raised base-button secondary storage-refresh">
+                            <span id="refreshIcon" class="material-icons" aria-hidden="true">refresh</span>
+                            <span data-str="Refresh">Refresh</span>
+                        </button>
+                    </div>
+                    <div id="checkStatus" class="base-error hidden" role="status"></div>
+                    <div id="diskList"></div>
+
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <link rel="stylesheet" href="configurationpage?name=storage_jpkribs_shared.css">
+    <link rel="stylesheet" href="configurationpage?name=storage_shared.css">
+</div>

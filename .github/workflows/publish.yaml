@@ -6,13 +6,116 @@ on:
       - released
   workflow_dispatch:
 
+permissions:
+  contents: write
+  actions: read
+
 jobs:
-  call:
-    uses: jellyfin/jellyfin-meta-plugins/.github/workflows/publish.yaml@master
-    with:
-      version: ${{ github.event.release.tag_name }}
-      is-unstable: ${{ github.event.release.prerelease }}
-    secrets:
-      deploy-host: ${{ secrets.DEPLOY_HOST }}
-      deploy-user: ${{ secrets.DEPLOY_USER }}
-      deploy-key: ${{ secrets.DEPLOY_KEY }}
+  update-manifest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6
+        with:
+          dotnet-version: 10.0.x
+
+      # A draft build that started before the release was published must finish first. It then finds the
+      # release published and leaves its assets alone, so the zip hashed below is the one that stays.
+      - name: Wait for Draft Builds
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 60); do
+            BUSY=$(gh run list --workflow changelog.yaml --limit 50 --json status --jq '[.[] | select(.status != "completed")] | length')
+            if [ "$BUSY" = "0" ]; then
+              exit 0
+            fi
+            echo "Waiting for ${BUSY} draft build(s) to finish (${attempt}/60)"
+            sleep 20
+          done
+          echo "Draft builds were still running after 20 minutes; refusing to touch the manifest." >&2
+          exit 1
+
+      - name: Get Release Info
+        id: release_info
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+        run: |
+          # Extract version and targetAbi from build.yaml
+          BUILD_VERSION=$(grep '^version:' build.yaml | sed 's/version: *"\?\([^"]*\)"\?.*/\1/' | tr -d '"')
+          TARGET_ABI=$(grep '^targetAbi:' build.yaml | sed 's/targetAbi: *"\?\([^"]*\)"\?.*/\1/' | tr -d '"')
+
+          BASE_URL="https://github.com/JPKribs/jellyfin-plugin-youtubeaudio/releases/download/${TAG}"
+          ASSET="jellyfin-plugin-youtubeaudio-${BUILD_VERSION}.zip"
+
+          # The manifest takes the hash of the zip servers will download, never only the .md5 beside it.
+          # -f on every download: a missing asset must fail the job rather than hashing an error page.
+          curl -sfL -o temp_plugin.zip "${BASE_URL}/${ASSET}"
+          CHECKSUM=$(md5sum temp_plugin.zip | cut -d' ' -f1)
+          rm temp_plugin.zip
+          LISTED=$(curl -sfL "${BASE_URL}/${ASSET}.md5" | cut -d' ' -f1 | tr 'A-F' 'a-f' || true)
+          if [ -n "$LISTED" ] && [ "$LISTED" != "$CHECKSUM" ]; then
+            echo "The zip hashes to ${CHECKSUM} but its .md5 says ${LISTED}; its assets changed after it was built. Aborting." >&2
+            exit 1
+          fi
+
+          TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+          echo "Build Version: ${BUILD_VERSION}"
+          echo "Target ABI: ${TARGET_ABI}"
+          echo "Checksum: ${CHECKSUM}"
+
+          echo "build_version=${BUILD_VERSION}" >> $GITHUB_OUTPUT
+          echo "target_abi=${TARGET_ABI}" >> $GITHUB_OUTPUT
+          echo "checksum=${CHECKSUM}" >> $GITHUB_OUTPUT
+          echo "timestamp=${TIMESTAMP}" >> $GITHUB_OUTPUT
+
+      - name: Update Manifest
+        env:
+          # The release body and every other value reach the shell only through environment
+          # variables, never through template interpolation, so quotes or $() in a changelog
+          # cannot execute or break the job.
+          RELEASE_BODY: ${{ github.event.release.body }}
+          TAG: ${{ github.event.release.tag_name }}
+          BUILD_VERSION: ${{ steps.release_info.outputs.build_version }}
+          TARGET_ABI: ${{ steps.release_info.outputs.target_abi }}
+          CHECKSUM: ${{ steps.release_info.outputs.checksum }}
+          TIMESTAMP: ${{ steps.release_info.outputs.timestamp }}
+        run: |
+          # Sanitize changelog by removing backticks
+          SANITIZED_CHANGELOG=$(printf '%s' "$RELEASE_BODY" | tr -d '`')
+
+          # Use jq to safely construct the JSON object
+          NEW_VERSION=$(jq -n \
+            --arg version "$BUILD_VERSION" \
+            --arg changelog "$SANITIZED_CHANGELOG" \
+            --arg targetAbi "$TARGET_ABI" \
+            --arg sourceUrl "https://github.com/JPKribs/jellyfin-plugin-youtubeaudio/releases/download/${TAG}/jellyfin-plugin-youtubeaudio-${BUILD_VERSION}.zip" \
+            --arg checksum "$CHECKSUM" \
+            --arg timestamp "$TIMESTAMP" \
+            '{
+              version: $version,
+              changelog: $changelog,
+              targetAbi: $targetAbi,
+              sourceUrl: $sourceUrl,
+              checksum: $checksum,
+              timestamp: $timestamp
+            }')
+
+          # Add new version to the beginning of versions array
+          jq --argjson newVersion "$NEW_VERSION" '.[0].versions = [$newVersion] + .[0].versions' manifest.json > manifest_temp.json
+          mv manifest_temp.json manifest.json
+
+      - name: Commit Changes
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add manifest.json
+          git commit -m "Update manifest for release ${TAG}" || exit 0
+          git push origin HEAD:master

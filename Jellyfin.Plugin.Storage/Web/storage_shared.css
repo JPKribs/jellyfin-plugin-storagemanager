@@ -1,0 +1,95 @@
+/* storage_shared.css */
+/* Layout Base does not set itself. Every component, color, and border comes from Base. */
+
+/* storage-disk-aside */
+/* The end of a disk row: the state badge over a usage meter, right aligned, a fixed width so meters line up down the list, inset from the row's edge as far as its title is. */
+/* Example: <div class="storage-disk-aside"><span class="base-badge green">Available</span><div class="base-usage-meter"></div></div> */
+.storage-disk-aside { display: flex; flex-direction: column; align-items: flex-end; gap: var(--base-gap-narrow); width: 14rem; max-width: 40vw; padding-inline-end: var(--base-pad-medium); }
+.storage-disk-aside > :not(.base-badge) { align-self: stretch; }
+
+/* storage-attention */
+/* The banner above the disk list when more than one thing needs a look: one line each, close together. */
+/* Example: <div class="base-error storage-attention"><ul><li>media2 went missing 2 hours ago.</li></ul></div> */
+.storage-attention ul { margin: 0; padding-inline-start: 1.25em; }
+.storage-attention li + li { margin-top: var(--base-gap-tight, 0.25em); }
+
+/* storage-list-toolbar */
+/* The line above the disk list: the Jellyfin and All filter on the left, the Refresh button on the right. */
+/* Example: <div class="storage-list-toolbar"><div class="base-pill-group"></div><button class="raised base-button secondary storage-refresh">Refresh</button></div> */
+.storage-list-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--base-gap-narrow); margin-bottom: var(--base-gap-narrow); }
+.storage-refresh { margin-left: auto; }
+
+/* storage-dialog */
+/* A disk dialog's body: the state line, then each section, a field gap apart. */
+/* Example: <div class="storage-dialog"><div class="base-defs"></div><div class="storage-dialog-section"></div></div> */
+.storage-dialog { display: flex; flex-direction: column; gap: var(--base-gap-wide); }
+.storage-dialog-section { display: flex; flex-direction: column; gap: var(--base-gap-narrow); }
+.storage-dialog-section > .base-field { flex: none; margin-bottom: 0; }
+
+/* storage-dialog-space */
+/* A disk dialog's space: the pie chart beside a row of Size, Used, and Free cards and a row of Storage low and Storage full cards, the rows as far apart as the cards, stacked on a phone. */
+/* Example: <div class="storage-dialog-space"><div class="base-pie-chart"></div><div class="storage-dialog-figures"></div></div> */
+.storage-dialog-space { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: var(--base-gap-wide); }
+.storage-dialog-figures { display: flex; flex-direction: column; gap: var(--base-gap-wide); }
+.storage-dialog .storage-dialog-figures > .base-cards { margin-bottom: 0 !important; }
+@media (max-width: 768px) { .storage-dialog-figures { gap: var(--base-gap-narrow); } }
+@media (max-width: 600px) { .storage-dialog-space { grid-template-columns: minmax(0, 1fr); } }
+
+/* storage-alert-editor */
+/* The full disk alerts on the Settings tab and in a disk dialog: the checkboxes, Measurement, and the panels, a field gap apart. */
+/* Example: <div class="storage-alert-editor"><div class="base-field"></div><div class="base-field storage-alert-unit"></div><div class="base-field-row storage-alert-panels"></div></div> */
+.storage-alert-editor { display: flex; flex-direction: column; gap: var(--base-gap-narrow); }
+.storage-alert-editor > * { flex: none; margin-bottom: 0; }
+
+/* storage-dialog-alerts */
+/* A disk dialog's alerts: a large Use its own alerts checkbox, then the alerts, which show only while it is checked. The inherit field's own pills give way to the checkbox. */
+/* Example: <div class="storage-dialog-section storage-dialog-alerts"><label class="base-checkbox large"></label><div class="base-inherit"><div class="base-inherit-field"></div><div class="base-pill-group base-inherit-toggle"></div></div></div> */
+.storage-dialog-alerts > .base-checkbox.large { flex: none; }
+.storage-dialog-alerts .base-inherit { display: block; }
+.storage-dialog-alerts .base-inherit:not(.inheriting) { margin-top: calc(var(--base-gap-wide) - var(--base-gap-narrow)); }
+.storage-dialog-alerts .base-inherit-toggle { display: none; }
+.storage-dialog-alerts .base-inherit.inheriting > .base-inherit-field { display: none; }
+
+/* storage-alert-failing */
+/* The Failing health alert on its own row above Too hot and Worn out, as far above them as they are apart. */
+/* Example: <div class="storage-alert-failing"><label class="base-checkbox large"></label></div> */
+.storage-alert-failing { margin-bottom: var(--base-gap-wide); }
+
+/* storage-folder-fields */
+/* A dialog's New folder form: the name and the library side by side and equal in width, stacked once they no longer fit. */
+/* Example: <div class="base-field-row storage-folder-fields"><div class="base-field"></div><div class="selectContainer"></div></div> */
+.storage-folder-fields { align-items: flex-start; }
+.storage-folder-fields > * { flex: 1 1 14rem; min-width: 0; margin-bottom: 0; }
+
+/* storage-dialog-actions */
+/* The end of a dialog section that saves: why it can't save, then Save on the right. */
+/* Example: <div class="storage-dialog-actions"><div class="base-error hidden"></div><button class="raised button-submit base-button">Save</button></div> */
+.storage-dialog-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: var(--base-gap-narrow); }
+.storage-dialog-actions > .base-error { flex: 1 1 auto; margin: 0; }
+
+/* storage-alert-panels */
+/* The Warning and Error panels on the Settings tab, side by side and equal in width, stacked once they no longer fit. */
+/* Example: <div class="base-field-row storage-alert-panels"><div class="base-panel storage-alert-panel"></div><div class="base-panel storage-alert-panel"></div></div> */
+.storage-alert-panels { align-items: stretch; }
+.storage-alert-panel { flex: 1 1 18rem; min-width: 0; }
+
+/* storage-alert-header */
+/* An alert panel's header: the alert's icon in its color, then its name. */
+/* Example: <div class="base-panel-header storage-alert-header"><span class="material-icons storage-alert-warning">warning</span><span>Warning</span></div> */
+.storage-alert-header { display: flex; align-items: center; gap: var(--base-gap-narrow); }
+.storage-alert-warning { color: var(--base-yellow-fg); }
+.storage-alert-error { color: var(--base-red-fg); }
+
+/* storage-alert-checks */
+/* The Warning and Error checkboxes on the Settings tab, side by side and equal in width and height, stacked once they no longer fit. */
+/* Example: <div class="base-field-row storage-alert-checks"><label class="base-checkbox large"></label><label class="base-checkbox large"></label></div> */
+.storage-alert-checks { align-items: stretch; }
+.storage-alert-checks > * { flex: 1 1 16rem; min-width: 0; }
+
+/* storage-level-green, storage-level-yellow, storage-level-red */
+/* A value in Base's status colors, as the Free card colors its value, such as an SSD's wear. */
+/* Example: <span class="storage-level-yellow">62%</span> */
+.storage-level-green { color: var(--base-green-fg); }
+.storage-level-yellow { color: var(--base-yellow-fg); }
+.storage-level-red { color: var(--base-red-fg); }
+

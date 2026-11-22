@@ -1,0 +1,77 @@
+<div id="StorageSettingsPage" data-role="page"
+     class="page type-interior pluginConfigurationPage withTabs"
+     data-require="emby-button,emby-checkbox"
+     data-controller="__plugin/storage_settings.js">
+    <div data-role="content">
+        <div class="content-primary">
+            <form id="StorageSettingsForm">
+                <div class="verticalSection verticalSection-extrabottompadding">
+
+                    <!-- Page title -->
+                    <div class="sectionTitleContainer flex align-items-center">
+                        <h1 class="sectionTitle" data-str="Settings">Settings</h1>
+                    </div>
+
+                    <!-- Alerts -->
+                    <!-- Which full disk alerts are on, what they measure, and where each sits. -->
+                    <div class="base-section">
+                        <div class="base-section-title" data-str="Alerts">Alerts</div>
+                        <div class="base-section-content">
+                            <div id="alertEditorMount"></div>
+                            <div id="healthEditorMount"></div>
+                        </div>
+                    </div>
+
+                    <!-- Missing disks -->
+                    <!-- What the plugin does while a disk is missing or unresponsive. -->
+                    <div class="base-section">
+                        <div class="base-section-title" data-str="SectionMissingDisks">Missing disks</div>
+                        <div class="base-section-content">
+                            <div class="base-field">
+                                <label data-str="HeaderLibraryScans">Library scans</label>
+                                <div class="base-choice-group" id="scanGuardChoices" role="radiogroup" aria-label="Library scans" data-str-label="HeaderLibraryScans">
+                                    <label class="base-choice">
+                                        <input type="radio" name="scanGuard" value="Affected" />
+                                        <span class="base-choice-name" data-str="ScanGuardAffected">Block when needed</span>
+                                        <span class="base-choice-text" data-str="HelpScanGuardAffected">Blocks a scan only when a missing disk's folders still hold files. Jellyfin skips gone and empty folders on its own.</span>
+                                    </label>
+                                    <label class="base-choice">
+                                        <input type="radio" name="scanGuard" value="All" />
+                                        <span class="base-choice-name" data-str="ScanGuardAll">Block every scan</span>
+                                        <span class="base-choice-text" data-str="HelpScanGuardAll">Blocks every library scan while any disk is missing or unresponsive.</span>
+                                    </label>
+                                    <label class="base-choice">
+                                        <input type="radio" name="scanGuard" value="Off" />
+                                        <span class="base-choice-name" data-str="ScanGuardOff">Never block</span>
+                                        <span class="base-choice-text" data-str="HelpScanGuardOff">Lets every scan run. Items on a missing disk may be removed.</span>
+                                    </label>
+                                </div>
+                                <div class="fieldDescription" data-str="HelpScanGuardScope">Only full library scans are blocked. Scanning one library from its menu always runs.</div>
+                            </div>
+                            <div class="checkboxContainer checkboxContainer-withDescription">
+                                <label class="emby-checkbox-label">
+                                    <input is="emby-checkbox" type="checkbox" id="chkRemount" />
+                                    <span class="checkboxLabel" data-str="LabelRemount">Remount missing disks</span>
+                                </label>
+                                <div class="fieldDescription checkboxFieldDescription" data-str="HelpRemount">Mounts a missing disk again at each check, waiting longer after each failed try.</div>
+                            </div>
+                            <div class="checkboxContainer checkboxContainer-withDescription">
+                                <label class="emby-checkbox-label">
+                                    <input is="emby-checkbox" type="checkbox" id="chkMuteMonitoring" />
+                                    <span class="checkboxLabel" data-str="LabelMuteMonitoring">Pause real-time monitoring</span>
+                                </label>
+                                <div class="fieldDescription checkboxFieldDescription" data-str="HelpMuteMonitoring">Ignores file changes in a missing disk's folders until it's back.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="saveBarMount"></div>
+
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <link rel="stylesheet" href="configurationpage?name=storage_jpkribs_shared.css">
+    <link rel="stylesheet" href="configurationpage?name=storage_shared.css">
+</div>

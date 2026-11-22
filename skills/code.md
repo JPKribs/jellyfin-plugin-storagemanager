@@ -1,0 +1,233 @@
+# Code
+
+How to write, comment, and test code in this plugin. It covers C#, JavaScript, HTML, CSS, shell, and YAML.
+
+## Base First
+
+[JPKribs.Jellyfin.Base](https://github.com/JPKribs/jellyfin-plugin-base) holds everything two plugins could share. Its README lists every component and helper. Read it before you write anything new.
+
+### Use What Base Has
+
+* Use the Base type or component when one fits. Never write a local version, a wrapper that renames it, or a CSS override of a `base-` class.
+* When Base almost fits, change Base. Never patch around it locally.
+* Delete a local copy as soon as Base offers the same thing. Do it in the commit that moves to that Base version.
+* Never shadow a Base name. A local `FormatUtilities` beside Base's `FormatUtilities` is ambiguous.
+* Read Base from the package this plugin builds against. The C# source is in `~/.nuget/packages/jpkribs.jellyfin.base/<version>/src/`, and the JS typings are in `assets/jpkribs_shared.d.ts` beside it.
+* Moving a page's UI to a Base component is UI work, not a [stop and ask](../starthere.md#stop-and-ask) item. Only stored data, routes, authorization, and password handling are.
+* Treat the local Base checkout as read only. Base has its own owner and its own release, so report a gap and wait for the version that closes it.
+* When Base differs from the local code it replaces, keep the local behavior in a small step around the Base call, and cover it with a test.
+
+| Need | Use from Base |
+| :--- | :--- |
+| Plugin class and config lock | `PluginBase<TPlugin, TConfiguration>` |
+| Scheduled task | `PluginScheduledTask`, `TaskTriggers` |
+| Outbound HTTP | `BaseHttp` and `HttpResult` |
+| Retry and backoff | `RetryPolicy`, `BackoffPolicy`, `HttpRetry` |
+| Addresses a user supplied, when the plugin must refuse private ones | `SsrfGuard` |
+| Secrets | `SecretProtector`, `StableSecretProtection`, `AddPluginSecretProtector` |
+| Comparing a presented secret | `SecretCompare.FixedTimeEquals` |
+| Writing a file whole or not at all | `AtomicFile`, with `ownerOnly: true` for a key or secret |
+| JSON state file | `JsonFileStore<T>` |
+| Paths inside a folder | `PathContainment` |
+| The clock | `TimeProvider`, and `UtcTime` for stored times |
+| Activity log | `ActivityLogger`, `ActivitySummary`, `ActivityText` |
+| Formatting and names | `FormatUtilities`, `ItemTitles`, `FileNameSanitizer` |
+| Config page lifecycle | `createConfigPage`, through `createStoragePage` in `storage_common.js` |
+| Page helpers | `createShared` |
+| Strings in the viewer's language | `loadTranslations`, through `t` in `storage_common.js`, and `BaseTranslations` in C# |
+| Tables | `createDataTable` |
+| Lists and row editors | `createCheckboxList`, `createChipSelect`, `createUserMultiSelector`, `createSortableCardList`, `createRepeater`, `createRecordList` |
+| Numbers and times | `createSliderField`, `createDurationField` |
+| Saving and messages | `createSaveBar`, `setFieldState`, `createToaster` |
+| Read only views | `createTimeline`, `createDefinitionList`, `createCopyField` |
+| Dialogs | `openDialog`, `confirmDialog`, `promptDialog`, `openEditorDialog`, `bindDialog` |
+
+### Move Code Into Base
+
+Code belongs in Base when another plugin could use it unchanged. A helper with no Storage types in its signature is a candidate.
+
+1. Add it to `../Shared/jellyfin-plugin-base/src/`, one file per component, following Base's [code guide](https://github.com/JPKribs/jellyfin-plugin-base/blob/main/skills/code.md).
+2. Add tests in `JPKribs.Jellyfin.Base.Tests/`, and JS tests in `JPKribs.Jellyfin.Base.Tests/js/`.
+3. Document it in Base's docs site inventory.
+4. Pack it locally with `scripts/pack.sh` and build this plugin against it with `-p:RestoreAdditionalProjectSources=<base>/nupkg`.
+5. Commit and push to Base, then run Base's **Release** workflow.
+6. Raise the `JPKribs.Jellyfin.Base` version in this plugin's csproj, delete the local copy, and add a `developer` changelog line naming the Base version.
+
+Never commit this plugin against an unreleased Base package.
+
+## Layout
+
+Each folder holds one kind of file, and a C# namespace matches its folder.
+
+| Path | Holds |
+| :--- | :--- |
+| `Plugin.cs` | The plugin class and its dashboard pages. |
+| `PluginServiceRegistrator.cs` | Service registration. |
+| `Api/` | The `Storage` controller. |
+| `Configuration/` | `PluginConfiguration.cs` only. No web files. |
+| `Web/` | Every file served to the browser, as `storage_<page>.html`, `.js`, and `.css`. The csproj embeds the whole folder. |
+| `Assets/` | The plugin logo. |
+| `Localization/` | The plugin's own strings, one file per language. See [translations.md](translations.md). |
+| `../Jellyfin.Plugin.Storage.Tests/` | The xUnit tests. |
+| `../docs/` | The MkDocs site. |
+| `../tools/` | Development tools that never ship. |
+
+## Comments
+
+### The Rules
+
+* Every class, method, function, and component gets a header comment.
+* The header is the name, then a summary of one or two sentences, leaning to one.
+* List inputs and outputs when there are any. One line each, as `name [type]: What or why`.
+* Write no inline comments, with one exception. A branch whose reason is not obvious gets one short line above it.
+* A branch comment says why, not what. Keep it under 15 words.
+* Never comment what the code already says. `// Check if values differ` is noise.
+* Never leave commented out code, TODO, FIXME, or HACK. Open an issue instead.
+* Never describe history. "Used to", "now", and "was changed to" belong in commit messages.
+* Use no em dashes or semicolons in comments.
+
+```text
+<Name>
+<What it does, in one sentence.>
+
+Inputs
+name [type]: What it is or why it is needed.
+
+Output
+[type]: What comes back.
+```
+
+Leave out **Inputs** when there are none, and **Output** when nothing comes back.
+
+### C#
+
+C# uses XML docs so the compiler and IntelliSense read them. The member name is the title. The type comes from the signature, so a `param` gives only the what or why.
+
+```csharp
+/// <summary>
+/// Gets the plugin's strings in one language, for the dashboard pages.
+/// </summary>
+/// <param name="language">The language, such as de or pt-br. Leave out for US English.</param>
+/// <returns>The strings by key, or Not Modified when the page already has them.</returns>
+[HttpGet("Translations")]
+[AllowAnonymous]
+[ProducesResponseType(StatusCodes.Status200OK)]
+[ProducesResponseType(StatusCodes.Status304NotModified)]
+public IActionResult Translations([FromQuery] string? language)
+    => BaseTranslations.Serve(language, Request, Response);
+```
+
+* Every type and every member that is not private gets `<summary>`, every `<param>`, and `<returns>` when it returns a value.
+* Private members get a `<summary>` when the name does not say enough.
+* Use `<inheritdoc/>` on an interface or override member.
+* Write `true` and `false` as `<c>true</c>` and `<c>false</c>`.
+* A constructor summary is "Initializes a new instance of the <see cref="Name"/> class."
+* Skip tautologies. `<param name="item">The item.</param>` says nothing, so write what the item is for.
+* Put one type in each file, named after the type. A small enum used by one class may share its file.
+* Match the namespace to the folder.
+
+### JavaScript
+
+```js
+// createStoragePage
+// Wraps Base's createConfigPage with the plugin ID and the tab bar, so each tab names only its index.
+//
+// Inputs
+// view [HTMLElement]: The page the dashboard passes to the module.
+// tabIndex [number]: The tab this page is, from 0.
+// options [object]: The rest of createConfigPage's options, such as bind, load, and isDirty.
+//
+// Output
+// [object]: The page handle from createConfigPage.
+export function createStoragePage(view, tabIndex, options) {
+```
+
+* Comment every top level function, every function assigned to `shared`, and every exported function.
+* Do not comment the methods inside a returned handle. List them in the Output line instead.
+* Open each file with a header naming the file and saying what it holds in one sentence. Use no `// ====` banners.
+* Only `storage_common.js` imports Base, by the relative path `./configurationpage?name=storage_jpkribs_shared.js`. It exports each Base builder a page uses, and every page imports from `storage_common.js`.
+* Every word a page shows comes from a key, through `t` from `storage_common.js`. See [translations.md](translations.md).
+
+### HTML
+
+```html
+<!-- Disks -->
+<!-- One row per disk or share the libraries use. -->
+<div class="fieldDescription" data-str="HelpStorage">
+```
+
+* One comment line naming each section or dialog where it starts, and an optional second line saying what it is for.
+* Use no inline `style` attributes.
+
+### CSS
+
+```css
+/* The disk list, a field gap above the Save Bar. */
+.storage-disk-list { margin: 0 0 var(--base-gap-wide); }
+```
+
+* `storage_shared.css` holds only spacing between Base components that Base does not set, on Base's gap tokens. Colors, borders, and backgrounds come from Base.
+* One comment line above each rule saying what it spaces.
+* A new plugin class takes the `storage-` prefix in kebab case, with three comment lines above it: the name, what it looks like, and one example. `base-` is reserved for Base.
+
+### Shell and YAML
+
+* A shell script opens with a comment saying what it does and how to run it.
+* A YAML file opens with a comment saying what it is for. Comment a step only when its reason is not obvious.
+
+## C# Conventions
+
+* Target `net10.0` with `Nullable` on, `TreatWarningsAsErrors` on, and `AnalysisMode` set to `AllEnabledByDefault`.
+* Keep `jellyfin.ruleset` identical across plugins. Raise a rule change in every plugin at once.
+* Suppress a rule only at the narrowest scope, with a reason. `#pragma warning disable CA2100 // SQL is internal and parameterized.`
+* Use file scoped namespaces, `sealed` classes, and records for data.
+* Name private fields `_camelCase`.
+* End every async method name in `Async`, pass the `CancellationToken` through, and use `ConfigureAwait(false)` on every await.
+* Guard public arguments with `ArgumentNullException.ThrowIfNull`.
+* Log through `ILogger<T>` with static, named templates, per [logging.md](logging.md#server-log). Pass a value from a request, a disk, or a file as a template argument, never inside the template.
+* Catch a specific exception, or filter with `when`. Rethrow `OperationCanceledException` when the token was cancelled.
+* Read the clock once in a method and reuse the value. Two reads can straddle a second and disagree.
+* Take a `TimeProvider` wherever time decides an outcome, so a test can move it.
+* Register services in `PluginServiceRegistrator`.
+* Give state kept per disk, session, or user a way out that needs no closing event. A disk or client can vanish without a goodbye, so drop what has been silent too long.
+
+## JavaScript Conventions
+
+* Each config page is an ES module whose default export calls `createStoragePage`, which wraps Base's `createConfigPage` and holds the tab list.
+* Keep one handle for each Base component a page draws. Call `destroy` before drawing it again, and `setValue` when only its values change.
+* Drop an answer that arrives after the page moved on. Remember the picked key before the request and compare it when the answer lands.
+* The pages are written with `var` and `function`. Keep a file in its own style, and use `const`, `let`, and arrow functions only in a file that already does.
+* Escape every value placed in HTML with `escapeHtml`.
+* Report results with `shared.setStatus`, and errors with `shared.errorText`.
+* Register every poller and observer with the page handle so `viewhide` stops it.
+* Pass the page handle to `openDialog` as `page`, so leaving the tab closes the dialog.
+* A Save Bar's `onSave` returns the save promise. To stop a save, reject with an `Error` whose message the bar shows.
+* Mount a Base control that holds inputs in a plain `base-field` with its label and description, never inside an `inputContainer`, which widens every input in it, unless the component's typings say it belongs there.
+* Watch for class names that collide with Jellyfin's own CSS. Jellyfin's global `.card` rule sets paint containment, so never add a bare `card` class to an element that holds a Base control, and never target a Repeater by `card` or `inline`. Its layout classes are `base-repeater-layout-card` and `base-repeater-layout-inline`. A Base component that draws a fixed popup, such as a Chip Select's list, never sits inside an element with `contain`, `transform`, or `filter`, since its popup lands off screen there.
+* Offer suggestions for one text value with `createComboBox`, never a `datalist`.
+* A Repeater row keeps keys that no field shows. Never add an empty field to carry one.
+* Rewrite typed text with a Repeater field's `transform`, never an input listener.
+
+## Security
+
+These rules guard the server's disks and the administrator routes. A change to any rule here is a [stop and ask](../starthere.md#stop-and-ask) item.
+
+* Keep the administrator policy, `[Authorize(Policy = "RequiresElevation")]`, on `StorageController`. `GET Storage/Translations` is the only route that allows anonymous requests.
+* Never run anything as root or an administrator, and never ask for more rights than the plugin has.
+* Never write outside Jellyfin's own folders without a [stop and ask](../starthere.md#stop-and-ask).
+* Log a value from a request, a disk, or a file only as a template argument, and never log a password.
+* Escape every value placed in HTML with `escapeHtml`.
+* Never put a password or a user's data in a URL.
+
+## Tests
+
+Every source file with logic has a test file. See [testing.md](testing.md) for each layer and how to write tests.
+
+## Checklist
+
+* [ ] Base's source and typings were searched, nothing here duplicates Base, and anything reusable went to Base first.
+* [ ] Every class, method, function, and component has a header.
+* [ ] Inline comments appear only above branches, and say why.
+* [ ] Every changed source file has tests that pass, per [testing.md](testing.md).
+* [ ] The [security](#security) rules hold.
+* [ ] `dotnet build` shows no warnings.
