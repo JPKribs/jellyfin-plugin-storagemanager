@@ -1,6 +1,6 @@
 # A Debian container that boots systemd, with the .NET SDK, udisks2, polkit, an /etc/fstab entry, and a jellyfin user
 # allowed by the same polkit rule the install guide gives, for the live tests.
-FROM mcr.microsoft.com/dotnet/sdk:10.0
+FROM mcr.microsoft.com/dotnet/sdk:11.0
 RUN apt-get update \
  && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends systemd systemd-sysv dbus udisks2 polkitd exfatprogs \
  && rm -rf /var/lib/apt/lists/* \
