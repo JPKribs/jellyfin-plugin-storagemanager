@@ -65,12 +65,11 @@ The docs site is MkDocs with the Material theme, built from `docs/` by `mkdocs.y
 
 Keep the nav in this order.
 
-1. **Overview** (`index.md`). What the plugin is and how it works.
-2. **Getting started**. Installation.
-3. **Reference**. Versioning.
-4. **Development**. [Architecture](../docs/Architecture.md).
-
-Add a section for using the plugin between **Getting started** and **Reference** when its first page is written.
+1. **Overview** (`index.md`). What the plugin is, what it does, and which OS supports what.
+2. **Getting started**. Installation, with each OS's setup.
+3. **Using Storage**. Storage tab, Disk details, Formatting and folders, Settings, Missing disks, Activity log.
+4. **Reference**. Troubleshooting, API, Versioning.
+5. **Development**. Building and testing, [Architecture](../docs/Architecture.md).
 
 Name page files in PascalCase with no spaces, such as `Architecture.md`.
 
@@ -201,7 +200,7 @@ Save every capture as PNG. Keep a retaken image at the size and subject of the o
 * **Stand-ins.** `stub.js` gives `ApiClient`, `Dashboard`, and `LibraryMenu` with the generic data. `LibraryMenu.setTabs` draws the dashboard header and the tab bar.
 * **Shots.** `shots.mjs` opens each subject at an 800 by 771 viewport and 2x with Playwright and writes the PNG to `docs/screenshots/`.
 
-The `shots` list in `shots.mjs` holds one subject, **Storage**, the scaffold tab. Add a subject for each page and dialog as it is built, and its sample data to `stub.js`.
+The `shots` list in `shots.mjs` holds one subject for each page and dialog the docs show. Add a subject for each new one, and its sample data to `stub.js`.
 
 To rerun it, start the server, then run every shot or a list of them from `tools/screenshots/`.
 

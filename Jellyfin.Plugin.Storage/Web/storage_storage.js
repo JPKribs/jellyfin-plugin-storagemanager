@@ -772,7 +772,8 @@ export default function (view) {
             body.appendChild(newFolderSection(disk, close));
         }
 
-        dialog = openDialog({ title: nameOf(disk), size: 'large', body: body, page: page });
+        // The dialog opens at its top with nothing focused, since the first thing that takes focus is the space chart.
+        dialog = openDialog({ title: nameOf(disk), size: 'large', body: body, page: page, autofocus: false });
     }
 
     // issuesOf
