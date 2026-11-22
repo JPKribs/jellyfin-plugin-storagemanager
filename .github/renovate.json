@@ -36,8 +36,8 @@
             "enabled": false
         },
         {
-            "description": "Jellyfin 12.4 builds on .NET 10",
-            "matchPackageNames": ["dotnet-sdk"],
+            "description": "Jellyfin 12.4 builds on .NET 10, so the SDK and the Linux test container's SDK image stay on 10",
+            "matchPackageNames": ["dotnet-sdk", "mcr.microsoft.com/dotnet/sdk"],
             "allowedVersions": "<11"
         },
         {
