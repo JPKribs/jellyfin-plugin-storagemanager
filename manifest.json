@@ -1,1 +1,14 @@
-[]
+[
+  {
+    "versions": [
+      {
+        "version": "12.4.1.0",
+        "changelog": "",
+        "targetAbi": "12.4.0.0",
+        "sourceUrl": "https://github.com/JPKribs/jellyfin-plugin-storagemanager/releases/download/v12.4.1.0/jellyfin-plugin-storagemanager-12.4.1.0.zip",
+        "checksum": "f8c516ac943de6f5ca8a3b1256dbaa18",
+        "timestamp": "2026-11-22T09:13:27Z"
+      }
+    ]
+  }
+]
