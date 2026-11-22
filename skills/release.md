@@ -114,4 +114,5 @@ git push
 * [ ] The changelog lists only this release, in the four keys.
 * [ ] The release branch is merged into `master`, and the release is set there.
 * [ ] The published draft has the notes, the zip, and its `.md5`, and matches `build.yaml`.
+* [ ] `manifest.json` holds the plugin's `guid`, `name`, `overview`, `description`, `imageUrl`, `owner`, and `category` above `versions`. **Publish Plugin** only adds versions, so the first release needs them written by hand.
 * [ ] The manifest commit names the version with the zip's checksum, and is pulled.
