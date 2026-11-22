@@ -90,7 +90,13 @@ jobs:
           TARGET_ABI: ${{ steps.release_info.outputs.target_abi }}
           CHECKSUM: ${{ steps.release_info.outputs.checksum }}
           TIMESTAMP: ${{ steps.release_info.outputs.timestamp }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          # A run started by hand has no release event, so read the notes from the release itself.
+          if [ -z "$RELEASE_BODY" ]; then
+            RELEASE_BODY=$(gh release view "$TAG" --json body --jq .body)
+          fi
+
           # Sanitize changelog by removing backticks
           SANITIZED_CHANGELOG=$(printf '%s' "$RELEASE_BODY" | tr -d '`')
 

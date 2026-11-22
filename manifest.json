@@ -1,9 +1,16 @@
 [
   {
+    "guid": "0d1ca63a-1bd8-45b2-882a-9aaa51b456c3",
+    "name": "Storage",
+    "overview": "Watch the disks and shares Jellyfin uses.",
+    "description": "Storage watches every disk and share Jellyfin uses. It warns when one fills up or starts failing, protects your library when one goes missing, remounts it, and formats new disks.",
+    "imageUrl": "https://raw.githubusercontent.com/JPKribs/jellyfin-plugin-storagemanager/refs/heads/master/Jellyfin.Plugin.Storage/Assets/Logo.png",
+    "owner": "JPKribs",
+    "category": "General",
     "versions": [
       {
         "version": "12.4.1.0",
-        "changelog": "",
+        "changelog": "\n## Added\n- The Storage tab lists each disk and share your libraries use, with its mount state, its space, and the libraries on it\n- A filter for disks no library uses, and a dialog with each disk's space, alerts, libraries, and folders\n- The Check storage task records disks that go missing, become unresponsive, come back, or pass the Storage low or Storage full alert in the activity log\n- Library scans are blocked while a disk they would scan is missing, and real-time monitoring ignores its folders\n- All also lists disks with no file system as Unformatted, with their model and size, on Linux, macOS, and Windows when Jellyfin runs as an administrator\n- Each disk's SMART health, with its temperature, power-on time, and wear where it reports them, and a Disk failing entry in the activity log when one starts failing\n- A missing disk is mounted again at each check, a share through NetFS on macOS and WNetAddConnection2 on Windows, and an fstab entry through systemd on Linux, with Disk remounted and Disk not remounted entries in the activity log\n- An unformatted disk's dialog formats it with a name and file system, mounts it where it stays mounted, and can add it to a library, after the name is typed to confirm. Linux uses udisks2, Windows the Storage Management API, and macOS diskutil\n- Disks holding Jellyfin's own folders, such as its cache, metadata, and transcodes, count as used by Jellyfin\n- Library folders Jellyfin cannot write to are flagged, and exFAT and NTFS disks formatted on Linux mount owned by Jellyfin's user\n- A mounted disk's dialog makes a folder at the top of the disk and can add it to a library in one step\n- A share's dialog sets the address it is remounted from, for a share the plugin never saw mounted\n- On Linux, disks that hold data but are not mounted are listed with what's on them, and can be erased and formatted once their device name is typed\n- Each disk is tagged Local, External, Network, or System, with External found from USB, Thunderbolt, and removable media on each OS\n- Disk health alerts for a failing disk, a disk running too hot, and a worn out SSD, each recorded once in the activity log and set on the Settings tab\n- The Storage tab leads with a banner of what needs a look and cards adding up the space of every disk in use\n- Each disk can override the Storage low and Storage full alerts in its dialog\n- The Settings tab sets the Storage low and Storage full alerts, when scans are blocked, whether missing disks are remounted, and whether monitoring is paused",
         "targetAbi": "12.4.0.0",
         "sourceUrl": "https://github.com/JPKribs/jellyfin-plugin-storagemanager/releases/download/v12.4.1.0/jellyfin-plugin-storagemanager-12.4.1.0.zip",
         "checksum": "f8c516ac943de6f5ca8a3b1256dbaa18",

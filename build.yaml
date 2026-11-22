@@ -1,7 +1,7 @@
 ---
 name: "Storage"
 guid: "0d1ca63a-1bd8-45b2-882a-9aaa51b456c3"
-version: "12.4.1.0"
+version: "12.4.1.1"
 targetAbi: "12.4.0.0"
 framework: "net10.0"
 overview: "Watch the disks and shares Jellyfin uses."
