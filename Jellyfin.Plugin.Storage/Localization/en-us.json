@@ -59,7 +59,6 @@
   "ButtonErase": "Erase",
   "ButtonEraseFormat": "Erase and format",
   "ButtonFormatDisk": "Format disk",
-  "ColumnLibrary": "Library",
   "ConfirmErase": "Everything on {0} will be erased, including {2}, and it will be formatted as {1}. This can't be undone.",
   "ConfirmFormat": "Everything on {0} will be erased and it will be formatted as {1}. This can't be undone.",
   "DurationDays": "{0} days",
@@ -159,6 +158,7 @@
   "LabelSpace": "Space",
   "LabelTemperature": "Temperature",
   "LabelTypeToConfirm": "Type {0} to confirm",
+  "LabelUsage": "Usage",
   "LabelUsed": "Used",
   "LabelWear": "Wear",
   "LastChecked": "Checked {0}",
@@ -203,7 +203,6 @@
   "TaskCheckStorageDescription": "Checks the space and mount state of each disk your libraries use, and records changes in the activity log.",
   "UnitGigabytesFree": "GB free",
   "UnitPercentUsed": "% used",
-  "UnitUsage": "Usage",
   "ValueCelsius": "{0} °C",
   "ValueWear": "{0}%"
 }

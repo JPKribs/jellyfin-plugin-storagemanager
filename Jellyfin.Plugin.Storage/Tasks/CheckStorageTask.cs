@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Jellyfin.Plugin.Storage.Services;
 using JPKribs.Jellyfin.Base;
 using MediaBrowser.Controller.Configuration;
+using MediaBrowser.Model.Globalization;
 using MediaBrowser.Model.Tasks;
 
 namespace Jellyfin.Plugin.Storage.Tasks;
@@ -17,16 +18,19 @@ public sealed class CheckStorageTask : PluginScheduledTask
 {
     private readonly StorageService _storage;
     private readonly IServerConfigurationManager _config;
+    private readonly ILocalizationManager _localization;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CheckStorageTask"/> class.
     /// </summary>
     /// <param name="storage">Checks the disks.</param>
     /// <param name="config">The server configuration, read for its display language.</param>
-    public CheckStorageTask(StorageService storage, IServerConfigurationManager config)
+    /// <param name="localization">Names Jellyfin's Maintenance group in the server's language.</param>
+    public CheckStorageTask(StorageService storage, IServerConfigurationManager config, ILocalizationManager localization)
     {
         _storage = storage;
         _config = config;
+        _localization = localization;
     }
 
     /// <inheritdoc />
@@ -39,7 +43,7 @@ public sealed class CheckStorageTask : PluginScheduledTask
     public override string Description => BaseTranslations.Get(TranslationKeys.TaskCheckStorageDescription, BaseTranslations.ServerLanguage(_config));
 
     /// <inheritdoc />
-    public override string Category => "Storage";
+    public override string Category => _localization.GetLocalizedString("TasksMaintenanceCategory");
 
     /// <inheritdoc />
     public override async Task ExecuteAsync(IProgress<double> progress, CancellationToken cancellationToken)
