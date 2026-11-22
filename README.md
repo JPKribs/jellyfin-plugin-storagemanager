@@ -1,6 +1,6 @@
 <img src="docs/assets/icon.png" alt="Storage" width="96" align="left">
 
-A Jellyfin plugin that watches the disks and shares your libraries use.
+A Jellyfin plugin that watches the disks and shares Jellyfin uses.
 
 <br clear="left">
 

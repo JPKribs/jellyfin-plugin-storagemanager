@@ -190,6 +190,8 @@ export function createStoragePage(view, tabIndex, options) {
 * Take a `TimeProvider` wherever time decides an outcome, so a test can move it.
 * Register services in `PluginServiceRegistrator`.
 * Give state kept per disk, session, or user a way out that needs no closing event. A disk or client can vanish without a goodbye, so drop what has been silent too long.
+* Pass a Tmds.DBus `MessageWriter` by `ref`. It is a struct, so a copy writes a broken message and the bus closes the connection.
+* Never assume Jellyfin runs as root. Test every disk change as Jellyfin's own user, which cannot make folders under `/mnt` or write to a disk it does not own.
 
 ## JavaScript Conventions
 
@@ -198,7 +200,9 @@ export function createStoragePage(view, tabIndex, options) {
 * Drop an answer that arrives after the page moved on. Remember the picked key before the request and compare it when the answer lands.
 * The pages are written with `var` and `function`. Keep a file in its own style, and use `const`, `let`, and arrow functions only in a file that already does.
 * Escape every value placed in HTML with `escapeHtml`.
-* Report results with `shared.setStatus`, and errors with `shared.errorText`.
+* Report results with `shared.setStatus`, and errors with `shared.errorText`. `errorText` returns a promise, so await it before showing the text.
+* Build Jellyfin's custom elements, such as `emby-input` and `emby-select`, from HTML markup. One made with `createElement` is never upgraded and fails in the real dashboard.
+* Open a dialog with `autofocus: false` when its first focusable piece is a chart or a card, so it opens at its top.
 * Register every poller and observer with the page handle so `viewhide` stops it.
 * Pass the page handle to `openDialog` as `page`, so leaving the tab closes the dialog.
 * A Save Bar's `onSave` returns the save promise. To stop a save, reject with an `Error` whose message the bar shows.

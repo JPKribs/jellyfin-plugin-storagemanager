@@ -468,6 +468,10 @@ The Storage pages draw no charts. When one is needed, pick it here.
 
 Every list, row, card, field, and bar in this plugin is a Base component or Base markup. No piece works around a missing Base option. When one must, list it here with the Base option it waits for, and delete it in the commit that moves to that option.
 
+| Piece | Waits for |
+| :--- | :--- |
+| `storage_shared.css` sets `margin-bottom: 0 !important` on the card rows in a disk dialog, since Base's card margin uses `!important` and doubles the gap between stacked rows | A Base option to draw a card row with no bottom margin |
+
 ## Checklist
 
 Run every new or changed string through this list.

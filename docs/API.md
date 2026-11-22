@@ -15,7 +15,7 @@ Each entry holds the disk's mount point, device, model, name, type, state, file 
 
 ### GET /Storage/Format
 
-Returns what formatting offers on this server: `FileSystems`, the file systems it can make, the first being the usual one, `MountRoot`, the folder a new disk is mounted in, or `null` for a drive letter, and `DashesForSpaces`.
+Returns what formatting offers on this server: `FileSystems`, the file systems it can make, the first being the standard one, `MountRoot`, the folder a new disk is mounted in, or `null` for a drive letter, and `DashesForSpaces`.
 
 ### POST /Storage/Format
 

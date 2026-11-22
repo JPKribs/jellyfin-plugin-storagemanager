@@ -108,6 +108,13 @@ A harness loads the page modules in headless Chromium with a stand-in `ApiClient
 * Look at each screenshot the harness saves.
 * A harness never decides that work is done. Check it on a test server afterwards.
 
+## Live Tests
+
+`tools/linux-live/run.sh` and `STORAGE_LIVE_MAC=1` run the tests that make real disks. See [Development](../docs/Development.md#live-tests).
+
+* Run every format and mount test as Jellyfin's own user too, not only as root. A root run hides permission failures.
+* `run.sh` runs its container steps in one single quoted block. An apostrophe inside it, even in a comment, ends the block and runs the rest on the host.
+
 ## Test Server
 
 Install a build on a Jellyfin 12.4 test server to look at a page or raise a real event. See [documentation.md](documentation.md#installing-a-build-by-hand).
